@@ -1,0 +1,37 @@
+{%- if network_mgmt_access_options is defined -%}
+
+  {%- if network_mgmt_access_options.logout_warning is defined -%}
+      {%- if network_mgmt_access_options.logout_warning.state|default('present') == "present" -%}
+logout-warning {{ network_mgmt_access_options.logout_warning.value|default('20') }}{{ "\n" }}
+      {%- else -%}
+no logout-warning {{ network_mgmt_access_options.logout_warning.value }}{{ "\n"}}
+      {%- endif -%}
+  {%- endif -%}
+
+  {%- if network_mgmt_access_options.acl is defined -%}
+    {%- if network_mgmt_access_options.acl.name is defined -%}
+      {%- if network_mgmt_access_options.acl.state|default('present') == "present" -%}
+access-class {{ network_mgmt_access_options.acl.name }} in{{ "\n" }}
+      {%- else -%}
+no access-class {{ network_mgmt_access_options.acl.name }} in{{ "\n" }}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if network_mgmt_access_options.session_limit is defined -%}
+    {%- if network_mgmt_access_options.session_limit.state|default('present') == "present" -%}
+session-limit {{ network_mgmt_access_options.session_limit.value|default('32') }}{{ "\n" }}
+    {%- else -%}
+no session-limit {{ network_mgmt_access_options.session_limit.value }}{{ "\n" }}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- if network_mgmt_access_options.exec_timeout is defined -%}
+    {%- if network_mgmt_access_options.exec_timeout.state|default('present') == "present" -%}
+exec-timeout {{ network_mgmt_access_options.exec_timeout.value|default('30') }}{{ "\n" }}
+    {%- else -%}
+no exec-timeout {{ network_mgmt_access_options.exec_timeout.value }}{{ "\n" }}
+    {%- endif -%}
+  {%- endif -%}
+
+{%- endif -%}

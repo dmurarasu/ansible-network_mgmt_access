@@ -1,0 +1,55 @@
+---
+
+- name: create temp file
+  tempfile:
+    state: file
+    prefix: ansible_
+    suffix: "_{{ inventory_hostname }}"
+  register: network_mgmt_access_file  
+  check_mode: no
+  changed_when: false
+  tags:
+    - mgmt_access_config
+
+- name: Create mgmt access configuration in temp file
+  template:
+    src: "{{ ansible_network_os }}_mgmt_access.j2"
+    dest: "{{ network_mgmt_access_file.path }}"         
+  changed_when: false
+  check_mode: no  
+  when: >
+    ansible_network_os == 'nxos' and
+    network_mgmt_access_options is defined
+  tags: 
+    - mgmt_access_config
+
+
+- name: display mgmt access config file content
+  debug: msg="{{ lookup('file', network_mgmt_access_file.path).split('\n') }}"
+  when: 
+    - mgmt_access_display_config is defined
+    - mgmt_access_display_config
+  ignore_errors: true
+  tags: 
+    - mgmt_access_config
+
+- name: Push  mgmt access config options to device
+  vars:
+    network_mgmt_access_file_content: "{{ lookup('file', network_mgmt_access_file.path).split('\n') }}"
+  nxos_config:
+    parents:
+      - line vty
+    lines:
+      "{{ network_mgmt_access_file_content }}"
+  tags:
+    - mgmt_access_config
+
+- name: delete temp file
+  file:
+   path: "{{ network_mgmt_access_file.path }}"
+    state: absent  
+  check_mode: no
+  changed_when: false
+  tags: 
+    - mgmt_access_config
+      
