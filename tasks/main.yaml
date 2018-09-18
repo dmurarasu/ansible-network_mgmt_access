@@ -47,7 +47,7 @@
 - name: delete temp file
   file:
    path: "{{ network_mgmt_access_file.path }}"
-    state: absent  
+   state: absent  
   check_mode: no
   changed_when: false
   tags: 
